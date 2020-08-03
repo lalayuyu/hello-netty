@@ -24,4 +24,5 @@ public class ResponseMessagePacket extends BaseMessagePacket {
      * 消息载荷
      */
     private Object payload;
+
 }
