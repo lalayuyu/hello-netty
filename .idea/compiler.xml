@@ -10,5 +10,10 @@
         <module name="lala-rpc" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="lala-rpc-client" target="1.8" />
+      <module name="lala-rpc-common" target="1.8" />
+      <module name="lala-rpc-server" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
