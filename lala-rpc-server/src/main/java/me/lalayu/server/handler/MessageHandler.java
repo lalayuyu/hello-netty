@@ -1,21 +1,15 @@
 package me.lalayu.server.handler;
 
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import me.lalayu.exception.MethodMatchException;
 import me.lalayu.protocol.RequestMessagePacket;
 import me.lalayu.protocol.ResponseMessagePacket;
 import me.lalayu.server.ServerExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -37,6 +31,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<RequestMessagePa
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RequestMessagePacket request) throws Exception {
 
+        LOGGER.info("receive the request from client: {}", JSON.toJSONString(request));
         ResponseMessagePacket response = new ResponseMessagePacket();
         MessageRecvTask task = new MessageRecvTask(serviceMap, request, response);
         ServerExecutor.submit(task, ctx, request, response);

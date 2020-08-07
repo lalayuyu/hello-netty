@@ -2,8 +2,9 @@ package me.lalayu.client.proxy;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import me.lalayu.client.*;
+import me.lalayu.client.ResponseFuture;
 import me.lalayu.client.discovery.ConnectManager;
+import me.lalayu.client.ClientHandler;
 import me.lalayu.protocol.MessageType;
 import me.lalayu.protocol.ProtocolConstant;
 import me.lalayu.protocol.RequestMessagePacket;
@@ -52,6 +53,7 @@ public class ContractProxyFactory implements InvocationHandler {
         packet.setSerialNumber(SerialNumberUtils.S.generateSerialNumber());
         packet.setMessageType(MessageType.REQUEST);
         packet.setInterfaceName(method.getDeclaringClass().getName());
+        packet.setMethodName(method.getName());
         packet.setMethodArguments(args);
 
         Class<?>[] parameterTypes = new Class<?>[args.length];

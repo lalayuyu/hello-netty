@@ -30,7 +30,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ConnectManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectManager.class);
 
-    private volatile static ConnectManager connectManager;
     private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(3, 6,
             600L, TimeUnit.SECONDS, new LinkedBlockingDeque<>(1024),
             new ThreadFactoryBuilder().setNameFormat("Rpc-client-thread-%d").build());

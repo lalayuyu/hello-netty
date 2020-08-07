@@ -1,4 +1,4 @@
-package me.lalayu.other;
+package me.lalayu.test.other;
 
 import me.lalayu.services.HelloService;
 

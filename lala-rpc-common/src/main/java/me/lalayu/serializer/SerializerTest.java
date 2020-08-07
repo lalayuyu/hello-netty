@@ -1,13 +1,10 @@
 package me.lalayu.serializer;
 
-import com.caucho.hessian.test.Test;
 import me.lalayu.serializer.impl.FastJsonSerializer;
 import me.lalayu.serializer.impl.HessianSerializer;
 import me.lalayu.serializer.impl.ProtostuffSerializer;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  *

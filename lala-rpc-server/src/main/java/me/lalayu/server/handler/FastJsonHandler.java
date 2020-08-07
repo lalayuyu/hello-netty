@@ -1,11 +1,5 @@
 package me.lalayu.server.handler;
 
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.timeout.IdleStateHandler;
-
-import java.util.Map;
-
 /**
  *
  **/

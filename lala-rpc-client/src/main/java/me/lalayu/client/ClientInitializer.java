@@ -4,9 +4,9 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import me.lalayu.client.ClientHandler;
-import me.lalayu.protocol.PacketDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import me.lalayu.protocol.PacketEncoder;
+import me.lalayu.protocol.PacketDecoder;
 import me.lalayu.protocol.RequestMessagePacket;
 import me.lalayu.protocol.ResponseMessagePacket;
 import me.lalayu.serializer.RpcSerializer;
@@ -32,6 +32,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline cp = ch.pipeline();
         cp.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
+        cp.addLast(new LengthFieldPrepender(4));
         cp.addLast(new PacketEncoder(RequestMessagePacket.class, serializer));
         cp.addLast(new PacketDecoder(ResponseMessagePacket.class, serializer));
         cp.addLast(new ClientHandler());

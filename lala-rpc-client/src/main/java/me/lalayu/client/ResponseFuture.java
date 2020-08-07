@@ -1,17 +1,12 @@
 package me.lalayu.client;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import me.lalayu.exception.InvokeTimeoutException;
 import me.lalayu.protocol.RequestMessagePacket;
 import me.lalayu.protocol.ResponseMessagePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -42,7 +37,7 @@ public class ResponseFuture {
         try {
             await();
             if (this.response != null) {
-                if (response.getStatusCode() == 200) {
+                if (response.getStatusCode() == 200L) {
                     return this.response.getPayload();
                 } else {
                     LOGGER.error("failed to invoke the remote service");

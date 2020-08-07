@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.net.PortUnreachableException;
 import java.util.HashMap;
 import java.util.Map;
 

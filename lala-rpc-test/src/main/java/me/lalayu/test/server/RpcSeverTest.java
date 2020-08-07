@@ -1,4 +1,4 @@
-package me.lalayu.server;
+package me.lalayu.test.server;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

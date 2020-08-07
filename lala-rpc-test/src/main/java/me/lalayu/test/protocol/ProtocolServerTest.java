@@ -1,4 +1,4 @@
-package me.lalayu.protocol;
+package me.lalayu.test.protocol;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.ServerBootstrap;
@@ -9,8 +9,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import lombok.extern.slf4j.Slf4j;
-import me.lalayu.serializer.impl.FastJsonSerializer;
-import me.lalayu.serializer.impl.HessianSerializer;
+import me.lalayu.protocol.*;
 
 /**
  *
@@ -18,7 +17,7 @@ import me.lalayu.serializer.impl.HessianSerializer;
 @Slf4j
 public class ProtocolServerTest {
     public static void main(String[] args) throws Exception {
-        int port = 8887;
+        int port = 18866;
         ServerBootstrap bootstrap = new ServerBootstrap();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workGroup = new NioEventLoopGroup();

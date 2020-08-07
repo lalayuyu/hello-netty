@@ -2,7 +2,6 @@ package me.lalayu.serializer.impl;
 
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import me.lalayu.serializer.RpcSerializer;
 
 import java.io.ByteArrayInputStream;
