@@ -23,7 +23,7 @@ public class RequestMessagePacket extends BaseMessagePacket{
     /**
      * 方法参数签名
      */
-    private String[] methodArgumentSignatures;
+    private Class<?>[] parameterTypes;
 
     /**
      * 方法参数

@@ -12,6 +12,7 @@
         <module>lala-rpc-client</module>
         <module>lala-rpc-server</module>
         <module>lala-rpc-common</module>
+        <module>lala-rpc-test</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -25,6 +26,7 @@
         <protostuff.version>1.0.8</protostuff.version>
         <hessian.version>4.0.63</hessian.version>
         <objenesis.version>2.1</objenesis.version>
+        <hutool.version>5.3.9</hutool.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -100,6 +102,12 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>28.1-jre</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
 
         <dependency>

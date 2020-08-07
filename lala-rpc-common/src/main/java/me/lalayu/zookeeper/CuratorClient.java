@@ -9,6 +9,8 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
+import java.util.List;
+
 /**
  *
  **/
@@ -49,6 +51,14 @@ public class CuratorClient {
 
     public void deletePath(String path) throws Exception {
         client.delete().forPath(path);
+    }
+
+    public byte[] getData(String path) throws Exception {
+        return client.getData().forPath(path);
+    }
+
+    public List<String> getChildren(String path) throws Exception {
+        return client.getChildren().forPath(path);
     }
 
     public void watchTreeNode(String path, TreeCacheListener listener) {

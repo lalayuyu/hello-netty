@@ -3,54 +3,78 @@ package me.lalayu.client;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import me.lalayu.exception.InvokeTimeoutException;
+import me.lalayu.protocol.RequestMessagePacket;
 import me.lalayu.protocol.ResponseMessagePacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
  **/
-@ToString
 public class ResponseFuture {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseFuture.class);
 
     private final long beginTimestamp = System.currentTimeMillis();
 
-    @Getter
-    private final long timeoutMilliseconds;
+    private final long TIME_OUT_MILLISECONDS = 3000L;
 
-    @Getter
-    private final String requestId;
+    private ResponseMessagePacket response;
+    private RequestMessagePacket request;
 
-    @Getter
-    @Setter
-    private volatile boolean sendRequestSucceed = false;
+    private Lock lock = new ReentrantLock();
+    private Condition completed = lock.newCondition();
 
-    @Getter
-    @Setter
-    private volatile Throwable cause;
 
-    @Getter
-    private volatile ResponseMessagePacket response;
-
-    private final CountDownLatch countDownLatch = new CountDownLatch(1);
-
-    public ResponseFuture(String requestId, long timeoutMilliseconds) {
-        this.timeoutMilliseconds = timeoutMilliseconds;
-        this.requestId = requestId;
+    public ResponseFuture(RequestMessagePacket request) {
+        this.request = request;
     }
 
-    public boolean timeout() {
-        return System.currentTimeMillis() - timeoutMilliseconds > timeoutMilliseconds;
+    public Object start() {
+        lock.lock();
+        try {
+            await();
+            if (this.response != null) {
+                if (response.getStatusCode() == 200) {
+                    return this.response.getPayload();
+                } else {
+                    LOGGER.error("failed to invoke the remote service");
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
-    public ResponseMessagePacket waitResponse(final long timeoutMilliseconds) throws InterruptedException {
-        countDownLatch.await(timeoutMilliseconds, TimeUnit.MILLISECONDS);
-        return response;
-    }
+   private void await() {
+        boolean timeout = false;
+       try {
+           timeout = completed.await(TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS);
+       } catch (InterruptedException e) {
+           e.printStackTrace();
+       }
+       if (!timeout) {
+           throw new InvokeTimeoutException("timeout when invoke remote service");
+       }
+   }
 
-    public void putResponse(ResponseMessagePacket response) throws InterruptedException {
-        this.response = response;
-        countDownLatch.countDown();
+    public void finish(ResponseMessagePacket response) {
+        lock.lock();
+        try {
+            this.response = response;
+            completed.signal();
+        } finally {
+            lock.unlock();
+        }
     }
 }

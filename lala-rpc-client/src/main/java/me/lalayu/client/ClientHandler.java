@@ -1,10 +1,20 @@
 package me.lalayu.client;
 
 import com.alibaba.fastjson.JSON;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import com.google.common.collect.Maps;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
+import me.lalayu.exception.SendRequestException;
+import me.lalayu.protocol.RequestMessagePacket;
 import me.lalayu.protocol.ResponseMessagePacket;
+import me.lalayu.utils.ByteBufferUtils;
+
+import java.net.SocketAddress;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -12,14 +22,60 @@ import me.lalayu.protocol.ResponseMessagePacket;
 @Slf4j
 public class ClientHandler extends SimpleChannelInboundHandler<ResponseMessagePacket> {
 
+    private ConcurrentMap<String, ResponseFuture> responseFutureConcurrentMap = Maps.newConcurrentMap();
+    private volatile Channel channel;
+    private SocketAddress remoteAddr;
+
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ResponseMessagePacket packet) throws Exception {
-        log.info("接受到服务器响应:{}", JSON.toJSONString(packet));
-        ResponseFuture responseFuture = ContractProxyFactory.RESPONSE_FUTURE_TABLE.get(packet.getSerialNumber());
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        this.remoteAddr = this.channel.remoteAddress();
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+        this.channel = ctx.channel();
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, ResponseMessagePacket response) throws Exception {
+        String responseId = response.getSerialNumber();
+        ResponseFuture responseFuture = responseFutureConcurrentMap.get(responseId);
         if (null != responseFuture) {
-            responseFuture.putResponse(packet);
+            responseFutureConcurrentMap.remove(responseId);
+            responseFuture.finish(response);
+            log.info("接受到服务器响应:{}", JSON.toJSONString(response));
         } else {
-            log.warn("ID{}对应的RequestFuture未找到", packet.getSerialNumber());
+            log.warn("ID{}对应的RequestFuture未找到", response.getSerialNumber());
         }
+    }
+
+    public void close() {
+        channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.info("Client caught exception!");
+        cause.printStackTrace();
+        ctx.close();
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        super.userEventTriggered(ctx, evt);
+    }
+
+    public ResponseFuture sendRequest(RequestMessagePacket request) {
+        ResponseFuture responseFuture = new ResponseFuture(request);
+        responseFutureConcurrentMap.put(request.getSerialNumber(), responseFuture);
+        channel.writeAndFlush(request).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                log.info("Success send the request:{}", JSON.toJSONString(request));
+            }
+        });
+        return responseFuture;
     }
 }
