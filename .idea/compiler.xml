@@ -7,11 +7,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="lala-rpc-server" />
         <module name="lala-rpc" />
+        <module name="lala-rpc-server" />
         <module name="lala-rpc-test" />
-        <module name="lala-rpc-common" />
         <module name="lala-rpc-client" />
+        <module name="lala-rpc-common" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

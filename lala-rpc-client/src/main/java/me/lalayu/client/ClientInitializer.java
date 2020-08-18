@@ -31,8 +31,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline cp = ch.pipeline();
-        cp.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
-        cp.addLast(new LengthFieldPrepender(4));
+        cp.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 0));
         cp.addLast(new PacketEncoder(RequestMessagePacket.class, serializer));
         cp.addLast(new PacketDecoder(ResponseMessagePacket.class, serializer));
         cp.addLast(new ClientHandler());
